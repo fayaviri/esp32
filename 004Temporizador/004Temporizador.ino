@@ -9,38 +9,50 @@ int valor = 0;
 bool cronometroEnMarcha = false;
 
 // Definición de los caracteres personalizados para la animación
-byte frame0[8] = {
+byte estado1[8] = {
   B00100,
   B01110,
   B00100,
   B00100,
-  B01110,
-  B10101,
+  B11111,
   B00100,
-  B01010
-};
-
-byte frame1[8] = {
-  B00100,
-  B01110,
-  B00100,
-  B00100,
-  B01110,
   B01010,
-  B00100,
-  B10101
+  B10001
 };
 
-byte frame2[8] = {
+// byte estado1[8] = {
+//   B00100,
+//   B01110,
+//   B00100,
+//   B10101,
+//   B01110,
+//   B00100,
+//   B01010,
+//   B10001
+// };
+
+
+byte estado2[8] = {
   B00100,
   B01110,
-  B00100,
-  B00100,
-  B01110,
-  B00100,
   B10101,
-  B01010
+  B01110,
+  B00100,
+  B01010,
+  B10001,
+  B00000
 };
+
+// byte estado2[8] = {
+//   B00100,
+//   B01110,
+//   B00100,
+//   B10101,
+//   B01110,
+//   B01010,
+//   B10001,
+//   B00000
+// };
 
 void setup() {
   Serial.begin(9600);
@@ -53,9 +65,8 @@ void setup() {
   pinMode(btnEnter, INPUT);
   
   // Cargar los caracteres personalizados en el LCD
-  pantalla.createChar(0, frame0);
-  pantalla.createChar(1, frame1);
-  pantalla.createChar(2, frame2);
+  pantalla.createChar(0, estado1);
+  pantalla.createChar(1, estado2);
 }
 
 void loop() {
@@ -105,5 +116,5 @@ void mostrarAnimacion() {
   static int frame = 0;
   pantalla.setCursor(15, 0); // Ubicar en el borde derecho de la primera línea
   pantalla.write(frame); // Mostrar el frame actual de la animación
-  frame = (frame + 1) % 3; // Cambiar al siguiente frame
+  frame = (frame + 1) % 2; // Cambiar al siguiente frame (0 o 1)
 }
