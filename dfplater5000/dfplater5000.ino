@@ -4,11 +4,11 @@
 #include <DFRobotDFPlayerMini.h>
 
 // ---------------- CONFIGURACIÓN WIFI Y MQTT ----------------
-// const char* ssid = "Ayaviri";
-// const char* password = "76030742";
+const char* ssid = "Ayaviri";
+const char* password = "76030742";
 
-const char* ssid = "fayaviri";
-const char* password = "12345678";
+// const char* ssid = "fayaviri";
+// const char* password = "12345678";
 
 
 const char* mqtt_server = "52.91.226.181";
