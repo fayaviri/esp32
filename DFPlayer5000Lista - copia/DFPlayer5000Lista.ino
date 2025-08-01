@@ -18,28 +18,11 @@ PubSubClient client(espClient);
 HardwareSerial mySerial(2); // UART2
 DFRobotDFPlayerMini myDFPlayer;
 
-#define DF_BUSY_PIN 4  // ← conectar aquí el pin BUSY del DFPlayer
-
 // ---------------- FUNCIONES ----------------
-void reproducirArchivo(int carpeta, int archivo) {
-  Serial.printf("🔊 Reproduciendo carpeta %02d archivo %03d\n", carpeta, archivo);
-
-  myDFPlayer.stop();
-  delay(100);
+void reproducirArchivo(int carpeta, int archivo, int milisegundos = 1000) {
+  Serial.printf("🔊 Reproduciendo carpeta %02d archivo %03d por %dms\n", carpeta, archivo, milisegundos);
   myDFPlayer.playFolder(carpeta, archivo);
-  delay(100);  // espera inicial
-
-  unsigned long t0 = millis();
-  unsigned long timeout = 8000;  // seguridad
-
-  // Esperar a que termine usando BUSY
-  while (digitalRead(DF_BUSY_PIN) == LOW && (millis() - t0 < timeout)) {
-    Serial.println(" DF_BUSY_PIN");
-    delay(50);
-  }
-
-  Serial.println("✅ Finalizó reproducción");
-  delay(100); // espacio entre audios
+  delay(milisegundos);
 }
 
 // ---------------- MQTT CALLBACK ----------------
@@ -70,12 +53,12 @@ void callbackMQTT(char* topic, byte* payload, unsigned int length) {
 
   int total = pasos.size();
   int index = 1;
-
   for (JsonObject paso : pasos) {
     int carpeta = paso["carpeta"];
     int archivo = paso["archivo"];
+    int milisegundos = paso["milisegundos"] | 1000; // ✅ valor por defecto si no viene
     Serial.printf("▶ Reproduciendo paso %d de %d\n", index, total);
-    reproducirArchivo(carpeta, archivo);
+    reproducirArchivo(carpeta, archivo, milisegundos);
     index++;
   }
 
@@ -104,9 +87,7 @@ void reconnect() {
 void setup() {
   Serial.begin(115200);
   delay(1000);
-  mySerial.begin(9600, SERIAL_8N1, 16, 17); // TX=16, RX=17
-
-  pinMode(DF_BUSY_PIN, INPUT); // ← configurar pin BUSY
+  mySerial.begin(9600, SERIAL_8N1, 16, 17);
 
   if (!myDFPlayer.begin(mySerial)) {
     Serial.println("❌ DFPlayer error");
